@@ -1,6 +1,5 @@
 package com.example.tflite_fashion_mnist
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
@@ -14,8 +13,8 @@ class ViewHolder(itemView : View, onItemClicked: (Int) -> Unit) : RecyclerView.V
         }
     }
 
-    fun bindView(drawable: Drawable){
-        image.setImageDrawable(drawable)
+    fun bindView(img: MainActivity.Image){
+        image.setImageDrawable(img.drawable)
     }
 
 }

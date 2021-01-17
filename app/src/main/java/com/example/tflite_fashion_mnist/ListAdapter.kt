@@ -1,13 +1,12 @@
 package com.example.tflite_fashion_mnist
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class ListAdapter(private val images: List<Drawable>,
-                  private val context: Context, private val onItemClicked: (Drawable) -> Unit) : RecyclerView.Adapter<ViewHolder>(){
+class ListAdapter(private val images: MutableList<MainActivity.Image>,
+                  private val context: Context, private val onItemClicked: (MainActivity.Image) -> Unit) : RecyclerView.Adapter<ViewHolder>(){
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindView(images[position])

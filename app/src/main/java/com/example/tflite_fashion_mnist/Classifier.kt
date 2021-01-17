@@ -12,7 +12,6 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 import java.util.*
 import kotlin.Comparator
-import kotlin.math.min
 
 class Classifier(assetManager: AssetManager, modelPath: String, labelPath: String, private val inputSize: Int) {
 
@@ -28,9 +27,9 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
         var id: String = "",
         var title: String = "",
         var confidence: Float = 0F
-    )  {
+    ) {
         override fun toString(): String {
-            return "Title = $title, Confidence = $confidence)"
+            return "(Id = $id, Title = $title, Confidence = $confidence)"
         }
     }
 
@@ -55,11 +54,7 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
         return assetManager.open(labelPath).bufferedReader().useLines { it.toList() }
     }
 
-//    private fun resizeBitmap(bitmap: Bitmap): Bitmap? {
-//        return Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, false)
-//    }
-
-    fun recognizeImage(bitmap: Bitmap): List<Recognition> {
+    fun recognizeImage(bitmap: Bitmap): Recognition? {
         val scaledBitmap = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, false)
         val byteBuffer = convertBitmapToByteBuffer(scaledBitmap)
         val result = Array(1) { FloatArray(labelList.size) }
@@ -84,7 +79,7 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
         return byteBuffer
     }
 
-    private fun getSortedResult(labelProbArray: Array<FloatArray>): List<Recognition> {
+    private fun getSortedResult(labelProbArray: Array<FloatArray>): Recognition? {
         Log.d("Classifier",
             "List Size:(%d, %d, %d)".format(labelProbArray.size,labelProbArray[0].size,labelList.size))
 
@@ -98,22 +93,13 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
         for (i in labelList.indices) {
             val confidence = labelProbArray[0][i]
             Log.d("RECOG INFO: Confidence", confidence.toString())
-            if (confidence >= threshHold) {
-                Log.d("RECOG INFO: Confidence2", confidence.toString())
-                pq.add(Recognition("" + i,
+            pq.add(Recognition("" + i,
                     if (labelList.size > i) labelList[i] else "Unknown", confidence
-                )
-                )
-            }
+            ))
         }
         Log.d("Classifier", "pqsize:(%d)".format(pq.size))
-        Log.d("RECOG INFO", pq.element().toString())
+        Log.d("RECOG INFO", pq.maxBy { it -> it.confidence }.toString())
 
-        val recognitions = ArrayList<Recognition>()
-        val recognitionsSize = min(pq.size, maxResult)
-        for (i in 0 until recognitionsSize) {
-            recognitions.add(pq.poll())
-        }
-        return recognitions
+        return pq.maxBy { it -> it.confidence }
     }
 }
