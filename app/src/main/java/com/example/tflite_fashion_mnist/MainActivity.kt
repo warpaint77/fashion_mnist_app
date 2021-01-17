@@ -1,21 +1,15 @@
 package com.example.tflite_fashion_mnist
 
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.res.AssetManager
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-
 import java.io.InputStream
 
 
@@ -74,41 +68,4 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
 
         runOnUiThread { Toast.makeText(this, result[0].title, Toast.LENGTH_SHORT).show() }
     }
-}
-
-class ListAdapter(private val images: List<Drawable>,
-                  private val context: Context, private val onItemClicked: (Drawable) -> Unit) : Adapter<ViewHolder>(){
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bindView(images[position])
-        holder.itemView.setOnClickListener({onItemClicked(images[position])})
-
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.image_view, parent, false)
-        return ViewHolder(view) {
-            onItemClicked(images[it])
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return images.size
-    }
-
-}
-
-class ViewHolder(itemView : View, onItemClicked: (Int) -> Unit) : RecyclerView.ViewHolder(itemView){
-    var image : ImageView = itemView?.findViewById(R.id.image_view)
-
-    init{
-        itemView.setOnClickListener{
-            onItemClicked(adapterPosition)
-        }
-    }
-
-    fun bindView(drawable: Drawable){
-        image.setImageDrawable(drawable)
-    }
-
 }
