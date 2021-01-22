@@ -98,7 +98,7 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
             val confidence = labelProbArray[0][i]
 //            Log.d("RECOG INFO: Confidence", confidence.toString())
             pq.add(Recognition("" + i,
-                    if (labelList.size > i) labelList[i] else "Unknown", df.format(confidence).toFloat(),
+                    if (labelList.size > i) labelList[i] else "Unknown", confidence,
                     df.format(interpreter.lastNativeInferenceDurationNanoseconds/1e9)
             ))
         }
