@@ -10,6 +10,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import java.text.DecimalFormat
 import java.util.*
 import kotlin.Comparator
 
@@ -22,11 +23,13 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
     private val imageStd = 255.0f
     private val maxResult = 3
     private val threshHold = 0.5f
+    private val df = DecimalFormat("##.####")
 
     data class Recognition(
         var id: String = "",
         var title: String = "",
-        var confidence: Float = 0F
+        var confidence: Float = 0F,
+        var inferenceDuration: String = ""
     ) {
         override fun toString(): String {
             return "(Id = $id, Title = $title, Confidence = $confidence)"
@@ -39,6 +42,7 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
         options.setUseNNAPI(true)
         interpreter = loadModelFile(assetManager, modelPath)?.let { Interpreter(it, options) }!!
         labelList = loadLabelList(assetManager, labelPath)
+        Log.d("Model used", modelPath)
     }
 
     private fun loadModelFile(assetManager: AssetManager, modelPath: String): MappedByteBuffer? {
@@ -92,13 +96,15 @@ class Classifier(assetManager: AssetManager, modelPath: String, labelPath: Strin
 
         for (i in labelList.indices) {
             val confidence = labelProbArray[0][i]
-            Log.d("RECOG INFO: Confidence", confidence.toString())
+//            Log.d("RECOG INFO: Confidence", confidence.toString())
             pq.add(Recognition("" + i,
-                    if (labelList.size > i) labelList[i] else "Unknown", confidence
+                    if (labelList.size > i) labelList[i] else "Unknown", df.format(confidence).toFloat(),
+                    df.format(interpreter.lastNativeInferenceDurationNanoseconds/1e9)
             ))
         }
         Log.d("Classifier", "pqsize:(%d)".format(pq.size))
         Log.d("RECOG INFO", pq.maxBy { it -> it.confidence }.toString())
+        Log.d("InferenceDurationSecs", df.format(interpreter.lastNativeInferenceDurationNanoseconds/1e9))
 
         return pq.maxBy { it -> it.confidence }
     }

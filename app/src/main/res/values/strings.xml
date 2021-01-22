@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TFLite_fashion_mnist</string>
+    <string-array name="models_array">
+        <item>Selecione um modelo</item>
+        <item>model_opt_fashion_mnist.tflite</item>
+        <item>model_notopt_fashion_mnist.tflite</item>
+    </string-array>
 </resources>
